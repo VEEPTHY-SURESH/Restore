@@ -1,11 +1,14 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material"
 import type { Product } from "../../app/models/product"
 import { NavLink } from "react-router-dom"
+import { useAddBasketItemMutation } from "../basket/basketApi"
+import { currencyFormat } from "../../lib/util"
 
 type Props = {
     product: Product
 }
 export default function ProductCard({product}: Props) {
+    const [addBasketItem, {isLoading}] = useAddBasketItemMutation();
   return (
     <Card
         elevation={3}
@@ -35,13 +38,18 @@ export default function ProductCard({product}: Props) {
                 variant="h6"
                 sx={{color: 'secondary.main'}}
             >
-                ${(product.price/100).toFixed(2)}
+                {currencyFormat(product.price)}
             </Typography>
         </CardContent>
         <CardActions
             sx={{justifyContent: 'space-between'}}
         >
-            <Button>Add to cart</Button>
+            <Button 
+                disabled={isLoading}
+                onClick={() => addBasketItem({product: product, quantity: 1})}
+            >
+                Add to cart
+            </Button>
             <Button component={NavLink} to={`/catalog/${product.id}`}>View</Button>
         </CardActions>
 
